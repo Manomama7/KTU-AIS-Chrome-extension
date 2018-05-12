@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import './Login.css';
+import getAuth from '../Services/LoginManager';
 
 class Login extends Component {
   constructor(props) {
     super(props);
-
-    this.loginError = React.createRef();
 
     this.state = {
       username: null,
@@ -29,6 +28,16 @@ class Login extends Component {
       error: false,
       loggingIn: true,
     });
+
+    getAuth(this.state.username, this.state.password)
+      .then((response) => {
+        console.log('Login success!');
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log('Login failed!');
+        console.log(error);
+      });
 
     if (this.state.username === 'username' && this.state.password === 'password') {
       console.log('You have inputted the correct username and password');
@@ -84,7 +93,7 @@ class Login extends Component {
                   </div>
                 </div>
 
-                <div className={errorClassNames} ref={this.loginError}>
+                <div className={errorClassNames}>
                   <i className="fas fa-exclamation-circle" /> Wrong username or password
                 </div>
 
