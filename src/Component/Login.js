@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './Login.css';
-import getAuth from '../Services/LoginManager';
+import getAuth from '../Utils/LoginManager';
 
 class Login extends Component {
   constructor(props) {
@@ -31,24 +31,21 @@ class Login extends Component {
 
     getAuth(this.state.username, this.state.password)
       .then((response) => {
+        // TODO: Login success in the UI
         console.log('Login success!');
         console.log(response);
+        this.setState({
+          loggingIn: false,
+        });
       })
       .catch((error) => {
         console.log('Login failed!');
         console.log(error);
+        this.setState({
+          loggingIn: false,
+          error: true,
+        });
       });
-
-    if (this.state.username === 'username' && this.state.password === 'password') {
-      console.log('You have inputted the correct username and password');
-    } else {
-      this.setState({ error: true });
-    }
-
-    // Mimics true login
-    setTimeout(() => {
-      this.setState({ loggingIn: false });
-    }, 3000);
   }
 
   render() {
@@ -94,7 +91,8 @@ class Login extends Component {
                 </div>
 
                 <div className={errorClassNames}>
-                  <i className="fas fa-exclamation-circle" /> Wrong username or password
+                  <i className="fas fa-exclamation-circle" />
+                   Wrong username or password
                 </div>
 
                 <button
