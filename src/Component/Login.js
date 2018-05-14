@@ -11,6 +11,7 @@ class Login extends Component {
       password: null,
       error: false,
       loggingIn: false,
+      loggedIn: false,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -36,6 +37,7 @@ class Login extends Component {
         console.log(response);
         this.setState({
           loggingIn: false,
+          loggedIn: true,
         });
       })
       .catch((error) => {
@@ -51,11 +53,18 @@ class Login extends Component {
   render() {
     const errorClassNames = `alert alert-danger${this.state.error ? ' show-alert' : ''}`;
     const loginContainerClassNames = `login-container${this.state.loggingIn ? ' logging-in' : ''}`;
+    const formContainerClassNames = `login-form ${this.state.loggedIn ? 'minimized' : ''}`;
+    const formClassNames = `form-signin text-center ${this.state.loggedIn ? 'logged-in' : ''}`;
 
     return (
       <div className={loginContainerClassNames} >
-        <form className="form-signin text-center" onSubmit={this.handleSubmit}>
+        <form className={formClassNames} onSubmit={this.handleSubmit}>
           <div className="d-flex mb-3 justify-content-start logo-container">
+            <div className="login-success-bubble" >
+              Hi, student!
+              <div className="arrow" />
+            </div>
+
             <h1 className="login-header">Login</h1>
 
             <div className="ml-4 text-white d-flex align-items-center loading-spinner" >
@@ -64,7 +73,7 @@ class Login extends Component {
           </div>
           <fieldset disabled={this.state.loggingIn}>
 
-            <div className="login-form" >
+            <div className={formContainerClassNames} >
               <div>
                 <div className="mb-4">
                   <div className="form-group form-group-1">
