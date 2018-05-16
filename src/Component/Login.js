@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './Login.css';
-import getAuth from '../Utils/LoginManager';
 
 class Login extends Component {
   constructor(props) {
@@ -30,24 +29,26 @@ class Login extends Component {
       loggingIn: true,
     });
 
-    getAuth(this.state.username, this.state.password)
-      .then((response) => {
-        // TODO: Login success in the UI
-        console.log('Login success!');
-        console.log(response);
-        this.setState({
-          loggingIn: false,
-          loggedIn: true,
+    chrome.runtime.getBackgroundPage((backgroundPage) => {
+      backgroundPage.Authenticate(this.state.username, this.state.password)
+        .then((response) => {
+          // TODO: Login success in the UI
+          console.log('Login success!');
+          console.log(response);
+          this.setState({
+            loggingIn: false,
+            loggedIn: true,
+          });
+        })
+        .catch((error) => {
+          console.log('Login failed!');
+          console.log(error);
+          this.setState({
+            loggingIn: false,
+            error: true,
+          });
         });
-      })
-      .catch((error) => {
-        console.log('Login failed!');
-        console.log(error);
-        this.setState({
-          loggingIn: false,
-          error: true,
-        });
-      });
+    });
   }
 
   render() {

@@ -4,6 +4,7 @@
   "short_name": "KTU AIS",
   "name": "KTU AIS Chrome extension",
   "version": "0.0.1",
+  "description": "Test",
 
   "icons": {
     "16": "logo.png",
@@ -16,8 +17,15 @@
     "default_title": "Open the popup"
   },
 
+  "background": {
+    "scripts": ["static/js/background.js"],
+    "persistent": false
+  },
+
   "permissions": [
     "http://*/*",
-    "https://*/*"
+    "https://*/*",
+    "alarms",
+    "notifications"
   ]
 }
