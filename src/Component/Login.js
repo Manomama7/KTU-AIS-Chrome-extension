@@ -39,6 +39,8 @@ class Login extends Component {
             loggingIn: false,
             loggedIn: true,
           });
+
+          chrome.runtime.getBackgroundPage(bg => bg.StartTimer());
         })
         .catch((error) => {
           console.log('Login failed!');

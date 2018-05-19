@@ -3,8 +3,8 @@
 
   "short_name": "KTU AIS",
   "name": "KTU AIS Chrome extension",
-  "version": "0.0.1",
-  "description": "Test",
+  "version": "0.1.0",
+  "description": "The description is not finished yet",
 
   "icons": {
     "16": "logo.png",
@@ -26,6 +26,7 @@
     "http://*/*",
     "https://*/*",
     "alarms",
-    "notifications"
+    "notifications",
+    "storage"
   ]
 }
