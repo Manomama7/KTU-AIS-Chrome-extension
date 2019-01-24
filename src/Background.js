@@ -12,10 +12,29 @@ function Notify(message) {
   });
 }
 
-async function Authenticate(username, password) {
-  console.log('Trying to authenticate');
+function Log(message) {
+  console.log(message);
+}
 
-  const response = await getAuth(username, password);
+async function Authenticate(username, password) {
+  Log('Trying to authenticate');
+
+  let response;
+
+  try {
+    response = await getAuth(username, password);
+  } catch (e) {
+    chrome.storage.local.set({
+      authStatus: false,
+    });
+
+    throw e;
+  }
+
+  chrome.storage.local.set({
+    authStatus: true,
+  });
+
   return response;
 }
 
@@ -24,13 +43,13 @@ async function checkNewMarks() {
   try {
     modules = await getModules();
   } catch (error) {
-    console.log(error.message);
+    Log(error.message);
     try {
       await Authenticate('', '');
       modules = await getModules();
     } catch (err) {
-      console.log(`Failed to login with error: ${err.message}`);
-      console.log('Need to login manually through the popup');
+      Log(`Failed to login with error: ${err.message}`);
+      Log('Need to login manually through the popup');
       throw new Error('Failed to check for new marks');
     }
   }
@@ -57,7 +76,7 @@ async function checkNewMarks() {
 }
 
 function startTimedExecution() {
-  console.log('Starting to monitor for marks');
+  Log('Starting to monitor for marks');
   Notify('Starting to monitor for marks');
 
   chrome.alarms.create(alarmName, {
@@ -66,27 +85,29 @@ function startTimedExecution() {
   });
 }
 
-chrome.alarms.onAlarm.addListener((alarm) => {
+const alarmListener = (alarm) => {
   if (alarm.name === alarmName) {
-    console.log('Trying to check for new marks');
+    Log('Trying to check for new marks');
     checkNewMarks()
       .then((newMarks) => {
         if (newMarks) {
-          console.log('There are new marks');
+          Log('There are new marks');
           Notify('There are new marks!');
         } else {
-          console.log('There are no new marks');
+          Log('There are no new marks');
         }
-        console.log('The periodic check of marks was successful');
+        Log('The periodic check of marks was successful');
       })
       .catch((error) => {
-        console.log(`Failed to get marks with error: ${error}`);
-        console.log('Clearing alarm');
+        Log(`Failed to get marks with error: ${error}`);
+        Log('Clearing alarm');
         Notify('Clearing alarm');
         chrome.alarms.clear(alarmName);
       });
   }
-});
+};
+
+chrome.alarms.onAlarm.addListener(alarmListener);
 
 // This is kind of a cheap way to expose the function globally
 window.Authenticate = Authenticate;
