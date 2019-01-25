@@ -9,9 +9,9 @@ class App extends Component {
   }
 
   componentDidMount() {
-    chrome.storage.local.get(['authStatus'], (status) => {
-      this.setState({ status });
-    });
+    // chrome.storage.local.get(['authStatus'], (status) => {
+    //   this.setState({ status });
+    // });
   }
 
   render() {
