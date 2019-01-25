@@ -1,6 +1,7 @@
 ## KTU-AIS Chrome extension
 A chrome extension that constantly monitors your KTU AIS page and notifies you when you get a new mark.
 To set up run:
+
 ```sh
 npm install
 npm run build
