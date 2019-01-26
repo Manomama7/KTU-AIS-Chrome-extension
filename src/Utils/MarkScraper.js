@@ -1,21 +1,21 @@
 import * as rp from 'request-promise';
 import * as cheerio from 'cheerio';
 
-function isAuthenticated(response) {
+export function isLoginPage(response) {
   const $ = cheerio.load(response);
 
   const input = $('input[value="Prisijungimas"]').length;
 
-  return input === 0 && response.length > 50;
+  return !(input === 0 && response.length > 50);
 }
 
 export async function getModules() {
   const response = await rp.get('https://uais.cr.ktu.lt/ktuis/stud.busenos');
 
-  const auth = isAuthenticated(response);
+  const loginPage = isLoginPage(response);
 
-  if (!auth) {
-    throw new Error('Student not authenticated, while trying to get modules');
+  if (loginPage) {
+    throw new Error('Student not logged in');
   }
 
   const $ = cheerio.load(response);

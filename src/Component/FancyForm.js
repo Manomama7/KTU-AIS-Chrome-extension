@@ -1,4 +1,5 @@
 import React from 'react';
+import FieldContainer from './FieldContainer';
 
 export default ({
   loading, success, handleSubmit, successText, headerText, children,
@@ -23,7 +24,12 @@ export default ({
         </div>
       </div>
 
-      {children}
+      <FieldContainer
+        disabled={loading}
+        minimized={success}
+      >
+        {children}
+      </FieldContainer>
     </form>
   </div>
 );

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Login from './Login';
+import { isLoggedIn } from '../Utils/KtuApi';
 
 class App extends Component {
   constructor(props) {
@@ -9,9 +10,10 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // chrome.storage.local.get(['authStatus'], (status) => {
-    //   this.setState({ status });
-    // });
+    isLoggedIn()
+      .then((loggedIn) => {
+        this.setState({ status: loggedIn });
+      });
   }
 
   render() {

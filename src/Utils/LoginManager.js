@@ -1,11 +1,5 @@
-import * as requestPromise from 'request-promise';
+import * as rp from 'request-promise';
 import * as cheerio from 'cheerio';
-
-const j = requestPromise.jar();
-const rp = requestPromise.defaults({ jar: j });
-
-// TODO: Cleanup the bad code,
-//       which is really a hack, but it works
 
 async function getAutoLogin() {
   const options = {
@@ -90,8 +84,6 @@ async function getAgree({ stateId }) {
 }
 
 async function postContinue({ samlResponse, relayState }) {
-  const cjar = rp.jar();
-
   const options = {
     url: 'https://uais.cr.ktu.lt/shibboleth/SAML2/POST',
     form: {
@@ -99,63 +91,35 @@ async function postContinue({ samlResponse, relayState }) {
       RelayState: relayState,
     },
     simple: false,
-    jar: cjar,
   };
 
   await rp.post(options);
 
   const opts = {
     url: 'https://uais.cr.ktu.lt/ktuis/studautologin',
-    jar: cjar,
   };
 
   await rp.get(opts);
-
-  return cjar;
 }
 
-async function getInfo(username, password, cjar) {
-  const options = {
-    uri: 'https://uais.cr.ktu.lt/ktuis/vs.ind_planas',
-    jar: cjar,
-  };
-
-  const response = await rp.get(options);
-  const $ = cheerio.load(response);
-
-  const name = $('#ais_lang_link_lt').parent().text().split(' ');
-
-  return {
-    name,
-    username,
-    password,
-    cookies: cjar,
-  };
-}
-
-async function getAuthCookies(username, password) {
+async function login(username, password) {
   const autoLogin = await getAutoLogin();
-  let authCookies;
 
   if (!autoLogin.authStatus) {
     const loginResponse = await postLogin(username, password, autoLogin);
 
-    if (!loginResponse.authStatus) {
-      const agreeResponse = await getAgree(loginResponse);
-      authCookies = await postContinue(agreeResponse);
-    } else if (loginResponse.relayState === undefined &&
-        loginResponse.samlResponse === undefined) {
-      throw new Error('Problem with login post');
-    } else {
-      authCookies = await postContinue(loginResponse);
+    if (loginResponse.relayState === undefined
+        && loginResponse.samlResponse === undefined) {
+      return false;
     }
+
+    const agreeResponse = await getAgree(loginResponse);
+    await postContinue(agreeResponse);
   } else {
-    authCookies = await postContinue(autoLogin);
+    await postContinue(autoLogin);
   }
 
-  const login = await getInfo(username, password, authCookies);
-
-  return login;
+  return true;
 }
 
-export default getAuthCookies;
+export default login;

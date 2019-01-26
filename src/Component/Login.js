@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import LoginForm from './LoginForm';
+import { loginAndStartTimer } from '../Utils/KtuApi';
 
 class Login extends Component {
   constructor(props) {
@@ -17,8 +18,7 @@ class Login extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleChange(event) {
-    const { name, value } = event.target;
+  handleChange({ name, value }) {
     this.setState({ [name]: value });
   }
 
@@ -30,43 +30,21 @@ class Login extends Component {
     });
 
     const { username, password } = this.state;
-    setTimeout(() => {
-      if (username === 'username' && password === 'password') {
-        this.setState({
-          loggingIn: false,
-          loggedIn: true,
-        });
-      } else {
-        this.setState({
-          loggingIn: false,
-          error: true,
-        });
-      }
-    }, 3000);
 
-
-    // chrome.runtime.getBackgroundPage((backgroundPage) => {
-    //   backgroundPage.Authenticate(this.state.username, this.state.password)
-    //     .then((response) => {
-    //       // TODO: Login success in the UI
-    //       console.log('Login success!');
-    //       console.log(response);
-    //       this.setState({
-    //         loggingIn: false,
-    //         loggedIn: true,
-    //       });
-
-    //       chrome.runtime.getBackgroundPage(bg => bg.StartTimer());
-    //     })
-    //     .catch((error) => {
-    //       console.log('Login failed!');
-    //       console.log(error);
-    //       this.setState({
-    //         loggingIn: false,
-    //         error: true,
-    //       });
-    //     });
-    // });
+    loginAndStartTimer(username, password)
+      .then((loggedIn) => {
+        if (loggedIn) {
+          this.setState({
+            loggingIn: false,
+            loggedIn: true,
+          });
+        } else {
+          this.setState({
+            loggingIn: false,
+            error: true,
+          });
+        }
+      });
   }
 
   render() {
