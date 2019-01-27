@@ -113,8 +113,12 @@ async function login(username, password) {
       return false;
     }
 
-    const agreeResponse = await getAgree(loginResponse);
-    await postContinue(agreeResponse);
+    if (!loginResponse.authStatus) {
+      const agreeResponse = await getAgree(loginResponse);
+      await postContinue(agreeResponse);
+    } else {
+      await postContinue(loginResponse);
+    }
   } else {
     await postContinue(autoLogin);
   }

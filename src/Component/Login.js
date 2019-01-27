@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import LoginForm from './LoginForm';
-import { loginAndStartTimer } from '../Utils/KtuApi';
+import KtuAisLogin from '../Utils/LoginManager';
 
 class Login extends Component {
   constructor(props) {
@@ -31,7 +31,7 @@ class Login extends Component {
 
     const { username, password } = this.state;
 
-    loginAndStartTimer(username, password)
+    KtuAisLogin(username, password)
       .then((loggedIn) => {
         if (loggedIn) {
           this.setState({
